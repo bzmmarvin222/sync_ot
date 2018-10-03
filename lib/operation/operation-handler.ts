@@ -1,6 +1,6 @@
 import {SyncableOperation} from "./syncable-operation";
 import {OperationUtil} from "./operations/operation-util";
-import {Operation, OperationType} from "./operation";
+import {Operation} from "./operation";
 
 export class OperationHandler<T extends object> implements SyncableOperation {
     private readonly _synced: T;
