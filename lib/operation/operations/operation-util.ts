@@ -19,6 +19,9 @@ export class OperationUtil {
             case OperationType.INIT:
                 OperationUtil.clone(syncedObj, operation);
                 break;
+            case OperationType.FULL_REPLACEMENT:
+                OperationUtil.fullReplacement(syncedObj, operation);
+                break;
             default:
                 throw new Error(INVALID_OPERATION_TYPE);
         }
@@ -51,5 +54,14 @@ export class OperationUtil {
             .forEach((key: string) => {
                 syncedObj[key] = operation.data[key];
             });
+    }
+
+    /**
+     * fully replaces a value by another one
+     * @param syncedObj the object to perform the replacement on
+     * @param operation the replacement operation
+     */
+    private static fullReplacement<T extends object>(syncedObj: T, operation: Operation): void {
+        ObjectTraversingUtil.applyValue(syncedObj, operation.objectPath, operation.data);
     }
 }

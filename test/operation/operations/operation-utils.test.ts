@@ -8,6 +8,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let expected: string;
     let insertion: Operation;
     let init: Operation;
+    let replacement: Operation;
 
     beforeEach(() => {
         objectToSync = {
@@ -39,6 +40,17 @@ describe('OperationUtil should perform the expected operations correctly', () =>
             data: {foo: {bar: 'foobar'}},
             objectPath: []
         };
+
+        replacement = {
+            range: {
+                start: -1,
+                end: -1
+            },
+            type: OperationType.FULL_REPLACEMENT,
+            data: expected,
+            objectPath: ['test', 1]
+        };
+
     });
 
     it('should throw error if the passed operation has mismatched type', function () {
@@ -74,5 +86,17 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         expect(objectToSync.test).to.not.be.ok;
         expect(objectToSync['foo']).to.be.ok;
         expect(objectToSync['foo']['bar']).to.equal(expected);
+    });
+
+    it('should fully replace the value at the given path', function () {
+        OperationUtil.transform(objectToSync, replacement);
+        expect(objectToSync.test[1]).to.equal(expected);
+    });
+
+    it('should fully replace the value at the given path with object', function () {
+        expected = 'ect';
+        replacement.data = {obj: 'ect'};
+        OperationUtil.transform(objectToSync, replacement);
+        expect(objectToSync.test[1]['obj']).to.equal(expected);
     });
 });
