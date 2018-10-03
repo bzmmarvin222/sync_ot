@@ -7,6 +7,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let objectToSync: { test: string[] };
     let expected: string;
     let insertion: Operation;
+    let init: Operation;
 
     beforeEach(() => {
         objectToSync = {
@@ -27,6 +28,16 @@ describe('OperationUtil should perform the expected operations correctly', () =>
             type: OperationType.INSERT,
             data: expected,
             objectPath: ['test', 1]
+        };
+
+        init = {
+            range: {
+                start: -1,
+                end: -1
+            },
+            type: OperationType.INIT,
+            data: {foo: {bar: 'foobar'}},
+            objectPath: []
         };
     });
 
@@ -55,4 +66,13 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         expect(objectToSync.test[1]).to.equal(expected);
     });
 
+    it('should reinit without breaking the old reference', function () {
+        expected = 'foobar';
+        const oldRef = objectToSync;
+        OperationUtil.transform(objectToSync, init);
+        expect(oldRef).to.equal(objectToSync);
+        expect(objectToSync.test).to.not.be.ok;
+        expect(objectToSync['foo']).to.be.ok;
+        expect(objectToSync['foo']['bar']).to.equal(expected);
+    });
 });
