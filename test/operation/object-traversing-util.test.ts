@@ -1,7 +1,7 @@
 import {expect} from "chai";
-import {OBJECT_TRAVERSING_ERROR, ObjectTraversingUtil} from "../lib/operation/object-traversing-util";
+import {OBJECT_TRAVERSING_ERROR, ObjectTraversingUtil} from "../../lib/operation/object-traversing-util";
 
-describe('should traverse and set values of objects correctly', () => {
+describe('ObjectTraversingUtil should traverse and set values of objects correctly', () => {
 
     let objectToModify: { test: string[] };
     let expected: string;
@@ -9,8 +9,8 @@ describe('should traverse and set values of objects correctly', () => {
     beforeEach(() => {
         objectToModify = {
             test: [
-                "test_index_1",
-                "test_index_2"
+                'test_index_1',
+                'test_index_2'
             ]
         };
         expected = 'Test';
