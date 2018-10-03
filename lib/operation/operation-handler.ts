@@ -9,6 +9,10 @@ export class OperationHandler<T extends object> implements SyncableOperation {
         this._synced = synced;
     }
 
+    get synced(): T {
+        return this._synced;
+    }
+
     public transform(operation: Operation): void {
         OperationUtil.transform(this._synced, operation);
     }

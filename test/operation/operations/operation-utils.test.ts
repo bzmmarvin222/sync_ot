@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import {INVALID_OPERATION_TYPE, OperationUtil} from "../../../lib/operation/operations/operation-util";
-import {Operation, OperationType} from "../../../lib/operation/operation";
+import {Operation, OperationType} from "../../../lib";
 
 describe('OperationUtil should perform the expected operations correctly', () => {
 

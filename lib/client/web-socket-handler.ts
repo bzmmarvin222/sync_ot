@@ -1,7 +1,7 @@
-import {Operation} from "..";
+import {Operation, SyncableHandler} from "..";
 import {Observable, Subject} from "rxjs";
 
-export class WebSocketHandler<T> {
+export class WebSocketHandler implements SyncableHandler{
     private _ws: WebSocket;
     private readonly _operations$: Subject<Operation>;
 
@@ -25,6 +25,10 @@ export class WebSocketHandler<T> {
         this._operations$.complete();
     }
 
+    /**
+     * sends the operation to the server to broadcast to all users
+     * @param operation to broadcast
+     */
     public queueOperation(operation: Operation): void {
         this._ws.send(JSON.stringify(operation));
     }
