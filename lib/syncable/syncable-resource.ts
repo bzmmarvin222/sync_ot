@@ -13,18 +13,10 @@ export class SyncableResource<T extends object> {
         });
     }
 
-    /**
-     * instantly performs the operation on the server
-     * @param operation
-     */
     public queueOperation(operation: Operation): void {
         this._syncHandler.queueOperation(operation);
     }
 
-    //TODO: this should not ignore the state of operations
-    /**
-     * returns the current state of data
-     */
     public getCurrentState(): T {
         return this._opHandler.synced;
     }
