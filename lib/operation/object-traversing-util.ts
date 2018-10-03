@@ -31,7 +31,7 @@ export class ObjectTraversingUtil {
      * @param objPath the path to traverse on the object
      * @return the wrapping object of the paths end
      */
-    private static findWrappingObject(obj: object, objPath: (string | number)[]): any {
+    public static findWrappingObject(obj: object, objPath: (string | number)[]): any {
         objPath = objPath || [];
         if (objPath.length < 1) {
             throw new Error(OBJECT_TRAVERSING_ERROR);
@@ -57,5 +57,4 @@ export class ObjectTraversingUtil {
             throw new Error(OBJECT_TRAVERSING_ERROR);
         }
     }
-
 }

@@ -15,6 +15,5 @@ export enum OperationType {
     DELETE = 'DELETE',
     REPLACE_RANGE = 'REPLACE_RANGE',
     FULL_REPLACEMENT = 'FULL_REPLACEMENT',
-    INIT = 'INIT',
-    APPEND = 'APPEND'
+    INIT = 'INIT'
 }

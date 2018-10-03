@@ -22,6 +22,9 @@ export class OperationUtil {
             case OperationType.FULL_REPLACEMENT:
                 OperationUtil.fullReplacement(syncedObj, operation);
                 break;
+            case OperationType.DELETE:
+                OperationUtil.delete(syncedObj, operation);
+                break;
             default:
                 throw new Error(INVALID_OPERATION_TYPE);
         }
@@ -54,6 +57,21 @@ export class OperationUtil {
             .forEach((key: string) => {
                 syncedObj[key] = operation.data[key];
             });
+    }
+
+    /**
+     * removes the value or object at the given path
+     * @param syncedObj the object to remove on
+     * @param operation the delete operation
+     */
+    private static delete<T extends object>(syncedObj: T, operation: Operation): void {
+        const obj = ObjectTraversingUtil.findWrappingObject(syncedObj, operation.objectPath);
+        const lastKeyOrIndex = operation.objectPath[operation.objectPath.length - 1];
+        if (Array.isArray(obj)) {
+            obj.splice(+lastKeyOrIndex, 1);
+        } else {
+            delete obj[lastKeyOrIndex];
+        }
     }
 
     /**

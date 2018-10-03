@@ -9,6 +9,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let insertion: Operation;
     let init: Operation;
     let replacement: Operation;
+    let deletion: Operation;
 
     beforeEach(() => {
         objectToSync = {
@@ -51,6 +52,15 @@ describe('OperationUtil should perform the expected operations correctly', () =>
             objectPath: ['test', 1]
         };
 
+        deletion = {
+            range: {
+                start: -1,
+                end: -1
+            },
+            type: OperationType.DELETE,
+            data: expected,
+            objectPath: ['test', 1]
+        };
     });
 
     it('should throw error if the passed operation has mismatched type', function () {
@@ -98,5 +108,17 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         replacement.data = {obj: 'ect'};
         OperationUtil.transform(objectToSync, replacement);
         expect(objectToSync.test[1]['obj']).to.equal(expected);
+    });
+
+    it('should remove from an array correctly', function () {
+        OperationUtil.transform(objectToSync, deletion);
+        expect(objectToSync.test[1]).to.not.be.ok;
+        expect(objectToSync.test.length).to.equal(1);
+    });
+
+    it('should remove objects correctly', function () {
+        deletion.objectPath = ['test'];
+        OperationUtil.transform(objectToSync, deletion);
+        expect(objectToSync.test).to.not.be.ok;
     });
 });
