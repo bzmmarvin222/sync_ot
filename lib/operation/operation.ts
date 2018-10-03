@@ -1,8 +1,8 @@
 export interface Operation {
     objectPath: (string | number)[];
     type: OperationType;
-    range: OperationRange;
-    data: (string | number | boolean | object);
+    range?: OperationRange;
+    data?: (string | number | boolean | object);
 }
 
 export interface OperationRange {
