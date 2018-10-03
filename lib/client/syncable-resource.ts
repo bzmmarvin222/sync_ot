@@ -3,7 +3,7 @@ import {Operation} from "..";
 import {OperationHandler} from "../operation/operation-handler";
 
 export class SyncableResource<T extends object> {
-    private _wsHandler: WebSocketHandler;
+    private _wsHandler: WebSocketHandler<T>;
     private _opHandler: OperationHandler<T>;
 
     constructor(webSocketUri: string, resource: T) {

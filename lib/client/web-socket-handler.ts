@@ -1,7 +1,7 @@
 import {Operation} from "..";
 import {Observable, Subject} from "rxjs";
 
-export class WebSocketHandler {
+export class WebSocketHandler<T> {
     private _ws: WebSocket;
     private readonly _operations$: Subject<Operation>;
 

@@ -16,6 +16,9 @@ export class OperationUtil {
             case OperationType.INSERT:
                 OperationUtil.insert(syncedObj, operation);
                 break;
+            case OperationType.INIT:
+                OperationUtil.clone(syncedObj, operation);
+                break;
             default:
                 throw new Error(INVALID_OPERATION_TYPE);
         }
@@ -32,5 +35,21 @@ export class OperationUtil {
         const index = Math.min(operation.range.start, oldValue.length);
         const updatedValue = oldValue.slice(0, index) + operation.data + oldValue.slice(index);
         ObjectTraversingUtil.applyValue(syncedObj, operation.objectPath, updatedValue);
+    }
+
+    /**
+     * removes all values with it's keys from an object and then reassigns the data from the passed operation to keep the reference intact
+     * @param syncedObj the object to clear and refill
+     * @param operation the operation to get the data from
+     */
+    private static clone<T extends object>(syncedObj: T, operation: Operation): void {
+        Object.keys(syncedObj)
+            .forEach((key: string) => {
+                delete (syncedObj[key]);
+            });
+        Object.keys(operation.data)
+            .forEach((key: string) => {
+                syncedObj[key] = operation.data[key];
+            });
     }
 }
