@@ -1,10 +1,10 @@
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {SyncableOperation} from "./syncable-operation";
+import {Subject} from "rxjs";
+import {SyncableOperation} from "../operation/syncable-operation";
 
 export class SyncableResource<T> {
     private _operations$: Subject<SyncableOperation<T>>;
 
-    constructor(ws: WebSocket) {
+    constructor(webSocketUri: string) {
         this._operations$ = new Subject();
         // ws.
     }
