@@ -7,6 +7,6 @@ export class WebSocketHandler {
     }
 
     private handleMessage(event: MessageEvent): void {
-
+        console.log(event);
     }
 }
