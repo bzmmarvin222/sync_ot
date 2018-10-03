@@ -1,5 +1,4 @@
-import {Operation} from "../operation";
-import {OperationType} from "../operation-type";
+import {Operation, OperationType} from "../operation";
 import {ObjectTraversingUtil} from "../object-traversing-util";
 
 export const INVALID_OPERATION_TYPE = 'The passed operation has no type.';

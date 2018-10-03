@@ -1,8 +1,3 @@
-import {OperationType} from "./operation-type";
-import {OperationRange} from "./operation-range";
-import {SyncableOperation} from "./syncable-operation";
-import {OperationUtil} from "./operations/operation-util";
-
 export interface Operation {
     objectPath: (string | number)[];
     type: OperationType;
@@ -10,14 +5,14 @@ export interface Operation {
     data: (string | number | boolean | object);
 }
 
-export abstract class OperationHandler<T extends object> implements SyncableOperation {
-    protected _synced: T;
+export interface OperationRange {
+    start: number;
+    end: number;
+}
 
-    protected constructor(synced: T) {
-        this._synced = synced;
-    }
-
-    public transform(operation: Operation): void {
-        OperationUtil.transform(this._synced, operation);
-    }
+export enum OperationType {
+    INSERT = 'INSERT',
+    DELETE = 'DELETE',
+    REPLACE_RANGE = 'REPLACE_RANGE',
+    FULL_REPLACEMENT = 'FULL_REPLACEMENT'
 }
