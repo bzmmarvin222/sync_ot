@@ -2,6 +2,7 @@ import {expect} from "chai";
 import {INVALID_OPERATION_TYPE, OperationUtil} from "../../../lib/operation/operations/operation-util";
 import {Operation, OperationType} from "../../../lib";
 import {SyncableTree} from "../../../lib/syncable/syncable-tree";
+import {root} from "rxjs/internal-compatibility";
 
 describe('OperationUtil should perform the expected operations correctly', () => {
 
@@ -36,7 +37,9 @@ describe('OperationUtil should perform the expected operations correctly', () =>
                 end: -1
             },
             type: OperationType.INIT,
-            data: {foo: {bar: 'foobar'}},
+            // data: {
+            //     children: []
+            // }
             objectPath: []
         };
 

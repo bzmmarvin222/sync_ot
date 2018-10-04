@@ -34,7 +34,7 @@ export class SyncableTree<T> {
         return SyncableTree.fromParsedJson(JSON.parse(json));
     }
 
-    private static fromParsedJson<R>(json: SyncableTreeJson<R>): SyncableTree<R> {
+    public static fromParsedJson<R>(json: SyncableTreeJson<R>): SyncableTree<R> {
         const result = new SyncableTree<R>();
         result.data = json.data;
         const children: SyncableTreeJson<R>[] = json.children || [];

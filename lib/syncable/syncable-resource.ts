@@ -1,23 +1,21 @@
 import {Operation, SyncableHandler, SyncableTree} from "..";
 import {OperationHandler} from "../operation/operation-handler";
+import {Observable} from "rxjs";
 
 export class SyncableResource<T> {
     private _syncHandler: SyncableHandler;
     private _opHandler: OperationHandler<T>;
 
     constructor(syncHandler: SyncableHandler, resource?: T) {
-        this._opHandler = new OperationHandler(resource);
         this._syncHandler = syncHandler;
-        this._syncHandler.operations$.subscribe((operation: Operation) => {
-            this._opHandler.transform(operation);
-        });
+        this._opHandler = new OperationHandler(syncHandler.operations$, resource);
     }
 
     public queueOperation(operation: Operation): void {
         this._syncHandler.queueOperation(operation);
     }
 
-    public getCurrentState(): SyncableTree<T> {
+    public getTree$(): Observable<SyncableTree<T>> {
         return this._opHandler.synced;
     }
 }

@@ -1,20 +1,33 @@
-import {SyncableOperation} from "./syncable-operation";
 import {OperationUtil} from "./operations/operation-util";
-import {Operation} from "./operation";
-import {SyncableTree} from "../syncable/syncable-tree";
+import {Operation, OperationType} from "./operation";
+import {SyncableTree} from "..";
+import {combineLatest, Observable, Subject} from "rxjs";
+import {filter, take} from "rxjs/operators";
 
-export class OperationHandler<T> implements SyncableOperation {
-    private readonly _synced: SyncableTree<T>;
+export class OperationHandler<T> {
+    private readonly _synced: Subject<SyncableTree<T>> = new Subject();
 
-    constructor(synced?: T) {
-        this._synced = SyncableTree.root(synced);
+    constructor(operations$: Observable<Operation>, synced?: T) {
+        if (synced) {
+            this._synced.next(SyncableTree.root(synced));
+            this.listen(operations$);
+        } else {
+            operations$.pipe(
+                filter(op => op.type === OperationType.INIT),
+                take(1)
+            ).subscribe(init => {
+                this.listen(operations$);
+                this._synced.next(SyncableTree.fromParsedJson(init.data));
+            });
+        }
     }
 
-    get synced(): SyncableTree<T> {
+    get synced(): Observable<SyncableTree<T>> {
         return this._synced;
     }
 
-    public transform(operation: Operation): void {
-        OperationUtil.transform(this._synced, operation);
+    private listen(operations$: Observable<Operation>): void {
+        combineLatest(this._synced, operations$)
+            .subscribe(([tree, operation]: [SyncableTree<T>, Operation]) => OperationUtil.transform(tree, operation));
     }
 }
