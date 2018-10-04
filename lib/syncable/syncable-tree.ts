@@ -3,6 +3,11 @@ import {Operation, OperationType} from "..";
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
 
+interface SyncableTreeJson<T> {
+    children: SyncableTreeJson<T>[],
+    data?: T
+}
+
 export class SyncableTree<T> {
     parent?: SyncableTree<T>;
     children: SyncableTree<T>[] = [];
@@ -19,6 +24,22 @@ export class SyncableTree<T> {
      */
     public static root<R>(data?: R): SyncableTree<R> {
         return new SyncableTree<R>(data);
+    }
+
+    /**
+     * recreates a fully instantiated tree from its non recursive json string representation
+     * @param json the json to parse
+     */
+    public static fromJson<R>(json: string): SyncableTree<R> {
+        return SyncableTree.fromParsedJson(JSON.parse(json));
+    }
+
+    private static fromParsedJson<R>(json: SyncableTreeJson<R>): SyncableTree<R> {
+        const result = new SyncableTree<R>();
+        result.data = json.data;
+        const children: SyncableTreeJson<R>[] = json.children || [];
+        result.children = children.map(child => SyncableTree.fromParsedJson(child));
+        return result;
     }
 
     /**
@@ -72,5 +93,28 @@ export class SyncableTree<T> {
             data: insertion,
             objectPath: this.getDataPathFromRoot()
         };
+    }
+
+    /**
+     * creates a non circular structure of the subtree with this node as the root
+     */
+    public toJson(): string {
+        this.removeParentsRecursively();
+        return JSON.stringify(this);
+    }
+
+    /**
+     * removes the parent to be used as a new root
+     */
+    public removeParent(): void {
+        this.parent = undefined;
+    }
+
+    /**
+     * removes the parents from all children to remove recursion for JSON.stringify()
+     */
+    public removeParentsRecursively(): void {
+        this.removeParent();
+        this.children.forEach(child => child.removeParentsRecursively());
     }
 }

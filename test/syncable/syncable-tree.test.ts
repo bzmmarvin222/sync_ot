@@ -15,6 +15,26 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expectedSecondChildDta = 'second_child';
     });
 
+    it('should return a non recursive json representation', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const firstChild = syncTree.addChild(expectedFirstChildData);
+        const secondChild = syncTree.addChild(expectedFirstChildData);
+        const json: string = syncTree.toJson();
+        expect(json).to.be.ok;
+    });
+
+    it('should create a fully working tree of the json representation', function () {
+        let syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        let firstChild = syncTree.addChild(expectedFirstChildData);
+        let secondChild = syncTree.addChild(expectedFirstChildData);
+        const json: string = syncTree.toJson();
+        syncTree = SyncableTree.fromJson(json);
+        expect(syncTree).to.be.ok;
+        expect(syncTree.data).to.equal(expectedRootData);
+        expect(syncTree.children.length).to.equal(2);
+        expect(syncTree.children[0].data).to.equal(expectedFirstChildData);
+    });
+
     it('should create an empty root node correctly', function () {
         const syncTree: SyncableTree<string> = SyncableTree.root();
         expect(syncTree).to.be.ok;
