@@ -1,11 +1,11 @@
-import {Operation, SyncableHandler} from "..";
+import {Operation, SyncableHandler, SyncableTree} from "..";
 import {OperationHandler} from "../operation/operation-handler";
 
 export class SyncableResource<T extends object> {
     private _syncHandler: SyncableHandler;
     private _opHandler: OperationHandler<T>;
 
-    constructor(syncHandler: SyncableHandler, resource: T) {
+    constructor(syncHandler: SyncableHandler, resource?: T) {
         this._opHandler = new OperationHandler(resource);
         this._syncHandler = syncHandler;
         this._syncHandler.operations$.subscribe((operation: Operation) => {
@@ -17,7 +17,7 @@ export class SyncableResource<T extends object> {
         this._syncHandler.queueOperation(operation);
     }
 
-    public getCurrentState(): T {
+    public getCurrentState(): SyncableTree<T> {
         return this._opHandler.synced;
     }
 }

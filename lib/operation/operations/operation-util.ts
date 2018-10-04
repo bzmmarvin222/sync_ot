@@ -17,9 +17,6 @@ export class OperationUtil {
             case OperationType.INSERT:
                 OperationUtil.insert(syncedNode, operation);
                 break;
-            case OperationType.INIT:
-                OperationUtil.clone(syncedNode, operation);
-                break;
             case OperationType.FULL_REPLACEMENT:
                 OperationUtil.fullReplacement(syncedNode, operation);
                 break;
@@ -43,17 +40,6 @@ export class OperationUtil {
         const index = Math.min(opIndex, oldValue.length);
         const updatedValue = oldValue.slice(0, index) + operation.data + oldValue.slice(index);
         ObjectTraversingUtil.applyValue(syncedNode, operation.objectPath, updatedValue);
-    }
-
-    /**
-     * removes all values with it's keys from an object and then reassigns the data from the passed operation to keep the reference intact
-     * @param syncedNode the node to clear and refill
-     * @param operation the operation to get the data from
-     */
-    private static clone<T>(syncedNode: SyncableTree<T>, operation: Operation): void {
-        syncedNode.children = [];
-        syncedNode.data = undefined;
-    //    TODO: fixme
     }
 
     /**
