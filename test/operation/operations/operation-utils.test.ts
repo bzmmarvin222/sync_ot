@@ -1,24 +1,24 @@
 import {expect} from "chai";
 import {INVALID_OPERATION_TYPE, OperationUtil} from "../../../lib/operation/operations/operation-util";
 import {Operation, OperationType} from "../../../lib";
+import {SyncableTree} from "../../../lib/syncable/syncable-tree";
 
 describe('OperationUtil should perform the expected operations correctly', () => {
 
-    let objectToSync: { test: string[] };
-    let expected: string;
+    let syncTree: SyncableTree<string>;
+    let expectedRootData: string;
+    let expectedFirstChildData: string;
+    let expectedSecondChildDta: string;
     let insertion: Operation;
     let init: Operation;
     let replacement: Operation;
     let deletion: Operation;
 
     beforeEach(() => {
-        objectToSync = {
-            test: [
-                'test_index_1',
-                'test_index_2'
-            ]
-        };
-        expected = 'Test';
+        syncTree = SyncableTree.root(expectedRootData);
+        expectedRootData = 'Test';
+        expectedFirstChildData = 'first_child';
+        expectedSecondChildDta = 'second_child';
 
         //this should transform the string 'test_index_2' to 'tTestest_index_2'
         insertion = {
@@ -28,7 +28,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
                 end: -1
             },
             type: OperationType.INSERT,
-            data: expected,
+            data: expectedRootData,
             objectPath: ['test', 1]
         };
 
@@ -48,7 +48,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
                 end: -1
             },
             type: OperationType.FULL_REPLACEMENT,
-            data: expected,
+            data: expectedRootData,
             objectPath: ['test', 1]
         };
 
@@ -58,7 +58,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
                 end: -1
             },
             type: OperationType.DELETE,
-            data: expected,
+            data: expectedRootData,
             objectPath: ['test', 1]
         };
     });
@@ -66,59 +66,59 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     it('should throw error if the passed operation has mismatched type', function () {
         //force tsc to let this pass
         insertion.type = null as any;
-        expect(() => OperationUtil.transform(objectToSync, insertion)).to.throw(INVALID_OPERATION_TYPE);
+        expect(() => OperationUtil.transform(syncTree, insertion)).to.throw(INVALID_OPERATION_TYPE);
     });
 
     it('should insert the desired string at the desired index', function () {
-        expected = 'tTestest_index_2';
-        OperationUtil.transform(objectToSync, insertion);
-        expect(objectToSync.test[1]).to.equal(expected);
+        expectedRootData = 'tTestest_index_2';
+        OperationUtil.transform(syncTree, insertion);
+        expect(syncTree.test[1]).to.equal(expectedRootData);
     });
 
     it('should insert the desired string at the end with an empty string', function () {
-        objectToSync.test[1] = '';
-        OperationUtil.transform(objectToSync, insertion);
-        expect(objectToSync.test[1]).to.equal(expected);
+        syncTree.test[1] = '';
+        OperationUtil.transform(syncTree, insertion);
+        expect(syncTree.test[1]).to.equal(expectedRootData);
     });
 
     it('should insert the desired string at the end with a way too high starting index', function () {
         insertion.range.start = 999;
-        expected = objectToSync.test[1] + expected;
-        OperationUtil.transform(objectToSync, insertion);
-        expect(objectToSync.test[1]).to.equal(expected);
+        expectedRootData = syncTree.test[1] + expectedRootData;
+        OperationUtil.transform(syncTree, insertion);
+        expect(syncTree.test[1]).to.equal(expectedRootData);
     });
 
     it('should reinit without breaking the old reference', function () {
-        expected = 'foobar';
-        const oldRef = objectToSync;
-        OperationUtil.transform(objectToSync, init);
-        expect(oldRef).to.equal(objectToSync);
-        expect(objectToSync.test).to.not.be.ok;
-        expect(objectToSync['foo']).to.be.ok;
-        expect(objectToSync['foo']['bar']).to.equal(expected);
+        expectedRootData = 'foobar';
+        const oldRef = syncTree;
+        OperationUtil.transform(syncTree, init);
+        expect(oldRef).to.equal(syncTree);
+        expect(syncTree.test).to.not.be.ok;
+        expect(syncTree['foo']).to.be.ok;
+        expect(syncTree['foo']['bar']).to.equal(expectedRootData);
     });
 
     it('should fully replace the value at the given path', function () {
-        OperationUtil.transform(objectToSync, replacement);
-        expect(objectToSync.test[1]).to.equal(expected);
+        OperationUtil.transform(syncTree, replacement);
+        expect(syncTree.test[1]).to.equal(expectedRootData);
     });
 
     it('should fully replace the value at the given path with object', function () {
-        expected = 'ect';
+        expectedRootData = 'ect';
         replacement.data = {obj: 'ect'};
-        OperationUtil.transform(objectToSync, replacement);
-        expect(objectToSync.test[1]['obj']).to.equal(expected);
+        OperationUtil.transform(syncTree, replacement);
+        expect(syncTree.test[1]['obj']).to.equal(expectedRootData);
     });
 
     it('should remove from an array correctly', function () {
-        OperationUtil.transform(objectToSync, deletion);
-        expect(objectToSync.test[1]).to.not.be.ok;
-        expect(objectToSync.test.length).to.equal(1);
+        OperationUtil.transform(syncTree, deletion);
+        expect(syncTree.test[1]).to.not.be.ok;
+        expect(syncTree.test.length).to.equal(1);
     });
 
     it('should remove objects correctly', function () {
         deletion.objectPath = ['test'];
-        OperationUtil.transform(objectToSync, deletion);
-        expect(objectToSync.test).to.not.be.ok;
+        OperationUtil.transform(syncTree, deletion);
+        expect(syncTree.test).to.not.be.ok;
     });
 });

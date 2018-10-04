@@ -2,12 +2,12 @@ export interface Operation {
     objectPath: (string | number)[];
     type: OperationType;
     range?: OperationRange;
-    data?: (string | number | boolean | object);
+    data?: any;
 }
 
 export interface OperationRange {
-    start: number;
-    end: number;
+    start?: number;
+    end?: number;
 }
 
 export enum OperationType {
