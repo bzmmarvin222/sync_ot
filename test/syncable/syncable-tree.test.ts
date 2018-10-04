@@ -1,5 +1,6 @@
 import {expect} from "chai";
-import {SyncableTree} from "../../lib/syncable/syncable-tree";
+import {CHILD_KEY, DATA_KEY, SyncableTree} from "../../lib/syncable/syncable-tree";
+import {Operation, OperationType} from "../../lib";
 
 
 describe('SyncableTree should perform the expected operations correctly', () => {
@@ -39,24 +40,48 @@ describe('SyncableTree should perform the expected operations correctly', () => 
 
     it('should return the tree path from root as empty array on root', function () {
         const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
-        const treePath: number[] = syncTree.getPathFromRoot();
+        const treePath: (number | string)[] = syncTree.getPathFromRoot();
         expect(treePath.length).to.equal(0);
     });
 
-    it('should return the tree path from root as [0] on first child', function () {
+    it('should return the tree path from root as ["children", 0] on first child', function () {
         const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
         const child = syncTree.addChild(expectedFirstChildData);
-        const treePath: number[] = child.getPathFromRoot();
-        expect(treePath.length).to.equal(1);
-        expect(treePath[0]).to.equal(0);
+        const treePath: (number | string)[] = child.getPathFromRoot();
+        expect(treePath.length).to.equal(2);
+        expect(treePath[0]).to.equal(CHILD_KEY);
+    });
+
+    it('should return the tree path from root as ["children", 0] on first child and append the data accessor', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const child = syncTree.addChild(expectedFirstChildData);
+        const treePath: (number | string)[] = child.getDataPathFromRoot();
+        expect(treePath.length).to.equal(3);
+        expect(treePath[0]).to.equal(CHILD_KEY);
+        expect(treePath[1]).to.equal(0);
+        expect(treePath[2]).to.equal(DATA_KEY);
     });
 
     it('should return the tree path from root as [1] on second child', function () {
         const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
         const firstChild = syncTree.addChild(expectedFirstChildData);
         const secondChild = syncTree.addChild(expectedFirstChildData);
-        const treePath: number[] = secondChild.getPathFromRoot();
-        expect(treePath.length).to.equal(1);
-        expect(treePath[0]).to.equal(1);
+        const treePath: (number | string)[] = secondChild.getPathFromRoot();
+        expect(treePath.length).to.equal(2);
+        expect(treePath[1]).to.equal(1);
+    });
+
+    it('should return a correct insertion operation', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const child = syncTree.addChild(expectedFirstChildData);
+        const index: number = 1;
+        const insertion: string = 'Test';
+        const operation: Operation = child.createInsertion(index, insertion);
+        expect(operation).to.be.ok;
+        expect(operation.type).to.equal(OperationType.INSERT);
+        const opRange = operation.range;
+        expect(opRange).to.be.ok;
+        expect((opRange || {}).start).to.equal(index);
+        expect(operation.data).to.equal(insertion);
     });
 });

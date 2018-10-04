@@ -30,7 +30,7 @@ describe('ObjectTraversingUtil should traverse and set values of objects correct
         expect(() => ObjectTraversingUtil.applyValue(objectWithPrimitive, ['test', 1], expected)).to.throw(OBJECT_TRAVERSING_ERROR);
     });
 
-    it('should throw an error if an empty or no path is provided', function () {
+    it('should throw an error if an empty or no path is provided on applying a value', function () {
         expect(() => ObjectTraversingUtil.applyValue(objectToModify, [], expected)).to.throw(OBJECT_TRAVERSING_ERROR);
     });
 
@@ -42,5 +42,10 @@ describe('ObjectTraversingUtil should traverse and set values of objects correct
 
     it('should throw an error if the path to a searched value is not valid', function () {
         expect(() => ObjectTraversingUtil.findValue(objectToModify, [])).to.throw(OBJECT_TRAVERSING_ERROR);
+    });
+
+    it('should return the passed object if an empty or no path is provided', function () {
+        const found = ObjectTraversingUtil.findWrappingObject(objectToModify, []);
+        expect(found).to.equal(objectToModify);
     });
 });

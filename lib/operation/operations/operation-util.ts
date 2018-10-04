@@ -39,7 +39,7 @@ export class OperationUtil {
      */
     private static insert<T>(syncedNode: SyncableTree<T>, operation: Operation): void {
         const oldValue = '' + ObjectTraversingUtil.findValue(syncedNode, operation.objectPath);
-        const opIndex: number = operation.range ? operation.range.start : 0;
+        const opIndex: number = operation.range ? operation.range.start || 0 : 0;
         const index = Math.min(opIndex, oldValue.length);
         const updatedValue = oldValue.slice(0, index) + operation.data + oldValue.slice(index);
         ObjectTraversingUtil.applyValue(syncedNode, operation.objectPath, updatedValue);
