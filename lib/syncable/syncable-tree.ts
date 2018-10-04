@@ -99,22 +99,18 @@ export class SyncableTree<T> {
      * creates a non circular structure of the subtree with this node as the root
      */
     public toJson(): string {
-        this.removeParentsRecursively();
-        return JSON.stringify(this);
-    }
-
-    /**
-     * removes the parent to be used as a new root
-     */
-    public removeParent(): void {
-        this.parent = undefined;
+        return JSON.stringify(this.toNonRecursive());
     }
 
     /**
      * removes the parents from all children to remove recursion for JSON.stringify()
+     * works not in place
      */
-    public removeParentsRecursively(): void {
-        this.removeParent();
-        this.children.forEach(child => child.removeParentsRecursively());
+    public toNonRecursive(): SyncableTreeJson<T> {
+        const childrenNonRecursive = this.children.map(child => child.toNonRecursive());
+        return {
+            data: this.data,
+            children: childrenNonRecursive
+        };
     }
 }
