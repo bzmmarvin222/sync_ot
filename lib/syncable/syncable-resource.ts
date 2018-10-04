@@ -1,7 +1,7 @@
 import {Operation, SyncableHandler, SyncableTree} from "..";
 import {OperationHandler} from "../operation/operation-handler";
 
-export class SyncableResource<T extends object> {
+export class SyncableResource<T> {
     private _syncHandler: SyncableHandler;
     private _opHandler: OperationHandler<T>;
 

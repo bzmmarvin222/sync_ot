@@ -3,7 +3,7 @@ import {OperationUtil} from "./operations/operation-util";
 import {Operation} from "./operation";
 import {SyncableTree} from "../syncable/syncable-tree";
 
-export class OperationHandler<T extends object> implements SyncableOperation {
+export class OperationHandler<T> implements SyncableOperation {
     private readonly _synced: SyncableTree<T>;
 
     constructor(synced?: T) {
