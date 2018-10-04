@@ -1,11 +1,11 @@
 import {OperationUtil} from "./operations/operation-util";
 import {Operation, OperationType} from "./operation";
 import {SyncableTree} from "..";
-import {combineLatest, Observable, Subject} from "rxjs";
+import {combineLatest, Observable, ReplaySubject, Subject} from "rxjs";
 import {filter, take} from "rxjs/operators";
 
 export class OperationHandler<T> {
-    private readonly _synced: Subject<SyncableTree<T>> = new Subject();
+    private readonly _synced: Subject<SyncableTree<T>> = new ReplaySubject(1);
 
     constructor(operations$: Observable<Operation>, synced?: T) {
         if (synced) {
