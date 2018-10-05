@@ -95,6 +95,28 @@ export class SyncableTree<T> {
         };
     }
 
+    public createNodeDeletion(): Operation {
+        return {
+            type: OperationType.DELETE,
+            objectPath: this.getPathFromRoot()
+        }
+    }
+
+    public createNodeDataDeletion(): Operation {
+        return {
+            type: OperationType.DELETE,
+            objectPath: this.getDataPathFromRoot()
+        }
+    }
+
+    public createReplacement(data: T): Operation {
+        return {
+            type: OperationType.FULL_REPLACEMENT,
+            objectPath: this.getDataPathFromRoot(),
+            data: data
+        }
+    }
+
     /**
      * creates a non circular structure of the subtree with this node as the root
      */

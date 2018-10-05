@@ -106,4 +106,35 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect((opRange || {}).start).to.equal(index);
         expect(operation.data).to.equal(insertion);
     });
+
+    it('should return a correct node deletion operation', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const firstChild = syncTree.addChild(expectedFirstChildData);
+        const operation: Operation = firstChild.createNodeDeletion();
+        expect(operation).to.be.ok;
+        expect(operation.type).to.equal(OperationType.DELETE);
+        expect(operation.objectPath.length).to.equal(2);
+        expect(operation.objectPath[1]).to.equal(0);
+    });
+
+    it('should return a correct node-data deletion operation', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const firstChild = syncTree.addChild(expectedFirstChildData);
+        const operation: Operation = firstChild.createNodeDataDeletion();
+        expect(operation).to.be.ok;
+        expect(operation.type).to.equal(OperationType.DELETE);
+        expect(operation.objectPath.length).to.equal(3);
+        expect(operation.objectPath[2]).to.equal(DATA_KEY);
+    });
+
+    it('should return a correct replacement operation', function () {
+        const expected: string = 'TestReplacement';
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const firstChild = syncTree.addChild(expectedFirstChildData);
+        const operation: Operation = firstChild.createReplacement(expected);
+        expect(operation).to.be.ok;
+        expect(operation.type).to.equal(OperationType.FULL_REPLACEMENT);
+        expect(operation.objectPath.length).to.equal(3);
+        expect(operation.data).to.equal(expected);
+    });
 });

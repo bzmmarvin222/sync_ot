@@ -13,16 +13,19 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let expectedFirstChildData: string;
     let expectedSecondChildDta: string;
     let exptedInsertion: string;
+    let expectedReplacement: string;
     let insertion: Operation;
     let init: Operation;
     let replacement: Operation;
-    let deletion: Operation;
+    let nodeDeletion: Operation;
+    let nodeDataDeletion: Operation;
 
     beforeEach(() => {
         expectedRootData = 'Test';
         expectedFirstChildData = 'first_child';
         expectedSecondChildDta = 'second_child';
         exptedInsertion = 'Test';
+        expectedReplacement = 'TestReplacement';
 
         syncTree = SyncableTree.root(expectedRootData);
         firstChild = syncTree.addChild(expectedFirstChildData);
@@ -30,6 +33,9 @@ describe('OperationUtil should perform the expected operations correctly', () =>
 
         //this should transform the string 'first_child' to 'fTestirst_child'
         insertion = firstChild.createInsertion(1, exptedInsertion);
+        replacement = firstChild.createReplacement(expectedReplacement);
+        nodeDeletion = firstChild.createNodeDeletion();
+        nodeDataDeletion = firstChild.createNodeDataDeletion();
 
         init = {
             range: {
@@ -41,26 +47,6 @@ describe('OperationUtil should perform the expected operations correctly', () =>
             //     children: []
             // }
             objectPath: []
-        };
-
-        replacement = {
-            range: {
-                start: -1,
-                end: -1
-            },
-            type: OperationType.FULL_REPLACEMENT,
-            data: expectedRootData,
-            objectPath: ['test', 1]
-        };
-
-        deletion = {
-            range: {
-                start: -1,
-                end: -1
-            },
-            type: OperationType.DELETE,
-            data: expectedRootData,
-            objectPath: ['test', 1]
         };
     });
 
@@ -81,7 +67,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         OperationUtil.transform(syncTree, insertion);
         expect(firstChild.data).to.equal(exptedInsertion);
     });
-    //
+
     it('should insert the desired string at the end with a way too high starting index', function () {
         if (!insertion.range) {
             insertion.range = {start: 0, end: 0};
@@ -91,38 +77,20 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         OperationUtil.transform(syncTree, insertion);
         expect(firstChild.data).to.equal(expected);
     });
-    //
-    // it('should reinit without breaking the old reference', function () {
-    //     expectedRootData = 'foobar';
-    //     const oldRef = syncTree;
-    //     OperationUtil.transform(syncTree, init);
-    //     expect(oldRef).to.equal(syncTree);
-    //     expect(syncTree.test).to.not.be.ok;
-    //     expect(syncTree['foo']).to.be.ok;
-    //     expect(syncTree['foo']['bar']).to.equal(expectedRootData);
-    // });
-    //
-    // it('should fully replace the value at the given path', function () {
-    //     OperationUtil.transform(syncTree, replacement);
-    //     expect(syncTree.test[1]).to.equal(expectedRootData);
-    // });
-    //
-    // it('should fully replace the value at the given path with object', function () {
-    //     expectedRootData = 'ect';
-    //     replacement.data = {obj: 'ect'};
-    //     OperationUtil.transform(syncTree, replacement);
-    //     expect(syncTree.test[1]['obj']).to.equal(expectedRootData);
-    // });
-    //
-    // it('should remove from an array correctly', function () {
-    //     OperationUtil.transform(syncTree, deletion);
-    //     expect(syncTree.test[1]).to.not.be.ok;
-    //     expect(syncTree.test.length).to.equal(1);
-    // });
-    //
-    // it('should remove objects correctly', function () {
-    //     deletion.objectPath = ['test'];
-    //     OperationUtil.transform(syncTree, deletion);
-    //     expect(syncTree.test).to.not.be.ok;
-    // });
+
+    it('should fully replace the data at the given path', function () {
+        OperationUtil.transform(syncTree, replacement);
+        expect(firstChild.data).to.equal(expectedReplacement);
+    });
+
+    it('should remove a node correctly', function () {
+        OperationUtil.transform(syncTree, nodeDeletion);
+        expect(syncTree.children.length).to.equal(1);
+        expect(syncTree.children.indexOf(firstChild)).to.equal(-1);
+    });
+
+    it('should remove data from a node correctly', function () {
+        OperationUtil.transform(syncTree, nodeDataDeletion);
+        expect(firstChild.data).to.not.be.ok;
+    });
 });
