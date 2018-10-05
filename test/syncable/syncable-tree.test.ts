@@ -138,4 +138,15 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(operation.objectPath.length).to.equal(3);
         expect(operation.data).to.equal(expected);
     });
+
+    it('should return a correct child appendation operation', function () {
+        const expected: string = 'TestAppend';
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        const firstChild = syncTree.addChild(expectedFirstChildData);
+        const operation: Operation = firstChild.createChildAppend(expected);
+        expect(operation).to.be.ok;
+        expect(operation.type).to.equal(OperationType.CHILD_APPEND);
+        expect(operation.objectPath.length).to.equal(2);
+        expect(operation.data).to.equal(expected);
+    });
 });

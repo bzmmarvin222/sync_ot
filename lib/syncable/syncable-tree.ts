@@ -57,14 +57,21 @@ export class SyncableTree<T> {
      * calculates the indices on the child nodes to traverse to get from the root to the current node and inserts the children key before each
      */
     public getPathFromRoot(): (number | string)[] {
-        const result: (number | string)[] = [];
+        return this.getPathToRoot().reverse();
+    }
+
+    /**
+     * calculates the path to the root by indices and keys
+     */
+    private getPathToRoot(): (number | string)[] {
+        let result: (number | string)[] = [];
         let parent: SyncableTree<T> | undefined = this.parent;
-        while (parent) {
+        if (parent) {
             result.push(parent.children.indexOf(this));
             result.push(CHILD_KEY);
-            parent = parent.parent;
+            result = result.concat(parent.getPathToRoot());
         }
-        return result.reverse();
+        return result;
     }
 
     /**
@@ -96,6 +103,9 @@ export class SyncableTree<T> {
         };
     }
 
+    /**
+     * creates a deletion for the current node to delete it from the tree, including its full subtree
+     */
     public createNodeDeletion(): Operation {
         return {
             type: OperationType.DELETE,
@@ -103,6 +113,9 @@ export class SyncableTree<T> {
         }
     }
 
+    /**
+     * creates a deletion for the data of the current node
+     */
     public createNodeDataDeletion(): Operation {
         return {
             type: OperationType.DELETE,
@@ -110,12 +123,28 @@ export class SyncableTree<T> {
         }
     }
 
+    /**
+     * creates a full replacement of the data the node holds
+     * @param data the data to replace with
+     */
     public createReplacement(data: T): Operation {
         return {
             type: OperationType.FULL_REPLACEMENT,
             objectPath: this.getDataPathFromRoot(),
             data: data
         }
+    }
+
+    /**
+     * creates a child append
+     * @param data the initial data of the child
+     */
+    public createChildAppend(data: T): Operation {
+        return {
+            type: OperationType.CHILD_APPEND,
+            objectPath: this.getPathFromRoot(),
+            data: data
+        };
     }
 
     /**

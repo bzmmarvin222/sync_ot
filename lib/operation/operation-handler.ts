@@ -9,8 +9,8 @@ export class OperationHandler<T> {
 
     constructor(operations$: Observable<Operation>, synced?: T) {
         if (synced) {
-            this._synced.next(SyncableTree.root(synced));
             this.listen(operations$);
+            this._synced.next(SyncableTree.root(synced));
         } else {
             operations$.pipe(
                 filter(op => op.type === OperationType.INIT),

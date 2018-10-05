@@ -56,6 +56,7 @@ export class ObjectTraversingUtil {
      */
     private static checkForObj(toCheck: any): void {
         if (!toCheck || typeof toCheck !== 'object') {
+            console.error(toCheck);
             throw new Error(OBJECT_TRAVERSING_ERROR);
         }
     }
@@ -66,6 +67,7 @@ export class ObjectTraversingUtil {
      */
     private static checkPath(objPath: (string | number)[]): void {
         if (objPath.length < 1) {
+            console.error(objPath);
             throw new Error(OBJECT_TRAVERSING_ERROR);
         }
     }

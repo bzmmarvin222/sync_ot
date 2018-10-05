@@ -14,11 +14,13 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let expectedSecondChildDta: string;
     let exptedInsertion: string;
     let expectedReplacement: string;
+    let expectedAppend: string;
     let insertion: Operation;
     let init: Operation;
     let replacement: Operation;
     let nodeDeletion: Operation;
     let nodeDataDeletion: Operation;
+    let append: Operation;
 
     beforeEach(() => {
         expectedRootData = 'Test';
@@ -26,6 +28,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         expectedSecondChildDta = 'second_child';
         exptedInsertion = 'Test';
         expectedReplacement = 'TestReplacement';
+        expectedAppend = 'TestAppend';
 
         syncTree = SyncableTree.root(expectedRootData);
         firstChild = syncTree.addChild(expectedFirstChildData);
@@ -36,6 +39,7 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         replacement = firstChild.createReplacement(expectedReplacement);
         nodeDeletion = firstChild.createNodeDeletion();
         nodeDataDeletion = firstChild.createNodeDataDeletion();
+        append = firstChild.createChildAppend(expectedAppend);
 
         init = {
             range: {
@@ -92,5 +96,11 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     it('should remove data from a node correctly', function () {
         OperationUtil.transform(syncTree, nodeDataDeletion);
         expect(firstChild.data).to.not.be.ok;
+    });
+
+    it('should add a new child to a node correctly', function () {
+        OperationUtil.transform(syncTree, append);
+        expect(firstChild.children.length).to.equal(1);
+        expect(firstChild.children[0].data).to.equal(expectedAppend);
     });
 });

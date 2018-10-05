@@ -16,10 +16,6 @@ export class ServerHandler implements SyncableHandler {
         this._operations$.next(operation);
     }
 
-    //TODO: this should not ignore the state of operations
-    /**
-     * returns the current state of data
-     */
     get operations$(): Observable<Operation> {
         return this._operations$;
     }
