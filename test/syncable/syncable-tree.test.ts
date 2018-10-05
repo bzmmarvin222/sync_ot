@@ -35,6 +35,7 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(syncTree.data).to.equal(expectedRootData);
         expect(syncTree.children.length).to.equal(2);
         expect(syncTree.children[0].data).to.equal(expectedFirstChildData);
+        expect(syncTree.children[0].parent).to.equal(syncTree);
     });
 
     it('should create an empty root node correctly', function () {

@@ -34,11 +34,12 @@ export class SyncableTree<T> {
         return SyncableTree.fromParsedJson(JSON.parse(json));
     }
 
-    public static fromParsedJson<R>(json: SyncableTreeJson<R>): SyncableTree<R> {
+    public static fromParsedJson<R>(json: SyncableTreeJson<R>, parent?: SyncableTree<R>): SyncableTree<R> {
         const result = new SyncableTree<R>();
         result.data = json.data;
+        result.parent = parent;
         const children: SyncableTreeJson<R>[] = json.children || [];
-        result.children = children.map(child => SyncableTree.fromParsedJson(child));
+        result.children = children.map(child => SyncableTree.fromParsedJson(child, result));
         return result;
     }
 
