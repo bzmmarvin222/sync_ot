@@ -56,7 +56,7 @@ export class OperationUtil {
         if (Array.isArray(obj)) {
             obj.splice(+lastKeyOrIndex, 1);
         } else {
-            delete obj[lastKeyOrIndex];
+            obj[lastKeyOrIndex] = undefined;
         }
     }
 

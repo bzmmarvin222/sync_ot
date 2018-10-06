@@ -149,4 +149,20 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(operation.objectPath.length).to.equal(2);
         expect(operation.data).to.equal(expected);
     });
+
+    it('should emit the latest data after setting it', function (done) {
+        let emits = 0;
+        let expectedEmittedValue = expectedRootData;
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        syncTree.dataChanges$.subscribe(data => {
+            expect(data).to.equal(expectedEmittedValue);
+            emits ++;
+            if (emits === 2) {
+                done();
+            }
+        });
+        expect(syncTree.data).to.equal(expectedRootData);
+        expectedEmittedValue = 'Emit';
+        syncTree.data = expectedEmittedValue;
+    });
 });

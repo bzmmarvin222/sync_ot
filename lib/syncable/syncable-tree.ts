@@ -1,4 +1,5 @@
 import {Operation, OperationType} from "..";
+import {BehaviorSubject} from "rxjs";
 
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
@@ -11,11 +12,26 @@ interface SyncableTreeJson<T> {
 export class SyncableTree<T> {
     parent?: SyncableTree<T>;
     children: SyncableTree<T>[] = [];
-    data?: T;
+    private _data?: T;
+    private readonly _dataChanges$: BehaviorSubject<T | undefined>;
 
     private constructor(data?: T, parent?: SyncableTree<T>) {
-        this.data = data;
+        this._data = data;
         this.parent = parent;
+        this._dataChanges$ = new BehaviorSubject(data);
+    }
+
+    get dataChanges$(): BehaviorSubject<T | undefined> {
+        return this._dataChanges$;
+    }
+
+    get data(): T | undefined {
+        return this._data;
+    }
+
+    set data(value: T | undefined) {
+        this._data = value;
+        this._dataChanges$.next(this._data);
     }
 
     /**
@@ -35,9 +51,7 @@ export class SyncableTree<T> {
     }
 
     public static fromParsedJson<R>(json: SyncableTreeJson<R>, parent?: SyncableTree<R>): SyncableTree<R> {
-        const result = new SyncableTree<R>();
-        result.data = json.data;
-        result.parent = parent;
+        const result = new SyncableTree<R>(json.data, parent);
         const children: SyncableTreeJson<R>[] = json.children || [];
         result.children = children.map(child => SyncableTree.fromParsedJson(child, result));
         return result;
@@ -161,7 +175,7 @@ export class SyncableTree<T> {
     public toNonRecursive(): SyncableTreeJson<T> {
         const childrenNonRecursive = this.children.map(child => child.toNonRecursive());
         return {
-            data: this.data,
+            data: this._data,
             children: childrenNonRecursive
         };
     }
