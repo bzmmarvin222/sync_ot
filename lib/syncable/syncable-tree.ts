@@ -1,23 +1,28 @@
 import {Operation, OperationType} from "..";
 import {BehaviorSubject} from "rxjs";
+import {Guid} from "guid-typescript/dist/guid";
+import {ObjectPath} from "../operation/object-traversing-util";
 
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
 
 interface SyncableTreeJson<T> {
     children: SyncableTreeJson<T>[],
-    data?: T
+    data?: T,
+    nodeId: string
 }
 
 export class SyncableTree<T> {
-    parent?: SyncableTree<T>;
-    children: SyncableTree<T>[] = [];
+    private readonly _parent?: SyncableTree<T>;
+    private _children: SyncableTree<T>[] = [];
+    private readonly _nodeId: Guid;
     private _data?: T;
     private readonly _dataChanges$: BehaviorSubject<T | undefined>;
 
-    private constructor(data?: T, parent?: SyncableTree<T>) {
+    private constructor(data?: T, parent?: SyncableTree<T>, nodeId?: Guid) {
         this._data = data;
-        this.parent = parent;
+        this._nodeId = nodeId || Guid.create();
+        this._parent = parent;
         this._dataChanges$ = new BehaviorSubject(data);
     }
 
@@ -27,6 +32,18 @@ export class SyncableTree<T> {
 
     get data(): T | undefined {
         return this._data;
+    }
+
+    get nodeId(): Guid {
+        return this._nodeId;
+    }
+
+    get children(): SyncableTree<T>[] {
+        return this._children;
+    }
+
+    get parent(): SyncableTree<T> | undefined {
+        return this._parent;
     }
 
     set data(value: T | undefined) {
@@ -51,9 +68,9 @@ export class SyncableTree<T> {
     }
 
     public static fromParsedJson<R>(json: SyncableTreeJson<R>, parent?: SyncableTree<R>): SyncableTree<R> {
-        const result = new SyncableTree<R>(json.data, parent);
+        const result = new SyncableTree<R>(json.data, parent, Guid.parse(json.nodeId));
         const children: SyncableTreeJson<R>[] = json.children || [];
-        result.children = children.map(child => SyncableTree.fromParsedJson(child, result));
+        result._children = children.map(child => SyncableTree.fromParsedJson(child, result));
         return result;
     }
 
@@ -63,25 +80,25 @@ export class SyncableTree<T> {
      */
     public addChild(data?: T): SyncableTree<T> {
         const child: SyncableTree<T> = new SyncableTree<T>(data, this);
-        this.children.push(child);
+        this._children.push(child);
         return child;
     }
 
     /**
      * calculates the indices on the child nodes to traverse to get from the root to the current node and inserts the children key before each
      */
-    public getPathFromRoot(): (number | string)[] {
+    public getPathFromRoot(): ObjectPath {
         return this.getPathToRoot().reverse();
     }
 
     /**
      * calculates the path to the root by indices and keys
      */
-    private getPathToRoot(): (number | string)[] {
-        let result: (number | string)[] = [];
-        let parent: SyncableTree<T> | undefined = this.parent;
+    private getPathToRoot(): ObjectPath {
+        let result: ObjectPath = [];
+        let parent: SyncableTree<T> | undefined = this._parent;
         if (parent) {
-            result.push(parent.children.indexOf(this));
+            result.push(parent._children.indexOf(this));
             result.push(CHILD_KEY);
             result = result.concat(parent.getPathToRoot());
         }
@@ -91,29 +108,30 @@ export class SyncableTree<T> {
     /**
      * calculates the indices on the child nodes to traverse to get from the root to the current node and appends the data accessor key
      */
-    public getDataPathFromRoot(): (number | string)[] {
-        const pathFromRoot = this.getPathFromRoot() as (number | string)[];
-        return pathFromRoot.concat([DATA_KEY]);
+    public getDataPathFromRoot(...dataObjectPath: ObjectPath): ObjectPath {
+        const pathFromRoot = this.getPathFromRoot();
+        return pathFromRoot.concat([DATA_KEY]).concat(dataObjectPath);
     }
 
     /**
      * determinates if the current node has a parent and therefore must be the root
      */
     public isRoot(): boolean {
-        return !!this.parent;
+        return !!this._parent;
     }
 
     /**
      * creates an insertion operation for the current node
      * @param index the index to insert after
      * @param insertion the string to insert
+     * @param dataObjectPath additional path information for the object held in data field
      */
-    public createInsertion(index: number, insertion: string): Operation {
+    public createInsertion(index: number, insertion: string, ...dataObjectPath: ObjectPath): Operation {
         return {
             type: OperationType.INSERT,
             range: {start: index, end: -1},
             data: insertion,
-            objectPath: this.getDataPathFromRoot()
+            objectPath: this.getDataPathFromRoot(...dataObjectPath)
         };
     }
 
@@ -173,8 +191,9 @@ export class SyncableTree<T> {
      * works not in place
      */
     public toNonRecursive(): SyncableTreeJson<T> {
-        const childrenNonRecursive = this.children.map(child => child.toNonRecursive());
+        const childrenNonRecursive = this._children.map(child => child.toNonRecursive());
         return {
+            nodeId: this._nodeId.toString(),
             data: this._data,
             children: childrenNonRecursive
         };

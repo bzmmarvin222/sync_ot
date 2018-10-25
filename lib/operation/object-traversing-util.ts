@@ -1,3 +1,7 @@
+export type ObjectPath = (number | string)[];
+
+const INVALID_PATH_ARGUMENT = 'The following path fragment is invalid.';
+const NOT_AN_OBJECT = 'Found nothing or something that is not a valid object.';
 export const OBJECT_TRAVERSING_ERROR = 'The provided path could not be traversed.';
 
 export class ObjectTraversingUtil {
@@ -8,7 +12,7 @@ export class ObjectTraversingUtil {
      * @param objPath the path to traverse on the object
      * @param value the value to be applied
      */
-    public static applyValue(obj: object, objPath: (string | number)[], value: any): void {
+    public static applyValue(obj: object, objPath: ObjectPath, value: any): void {
         objPath = objPath || [];
         this.checkPath(objPath);
         const wrapping = this.findWrappingObject(obj, objPath);
@@ -22,7 +26,7 @@ export class ObjectTraversingUtil {
      * @param objPath the path to traverse on the object
      * @return the value at the end of the path
      */
-    public static findValue(obj: object, objPath: (string | number)[]): any {
+    public static findValue(obj: object, objPath: ObjectPath): any {
         objPath = objPath || [];
         this.checkPath(objPath);
         const wrapping = this.findWrappingObject(obj, objPath);
@@ -36,7 +40,7 @@ export class ObjectTraversingUtil {
      * @param objPath the path to traverse on the object
      * @return the wrapping object of the paths end
      */
-    public static findWrappingObject(obj: object, objPath: (string | number)[]): any {
+    public static findWrappingObject(obj: object, objPath: ObjectPath): any {
         objPath = objPath || [];
 
         let i = 0;
@@ -56,6 +60,7 @@ export class ObjectTraversingUtil {
      */
     private static checkForObj(toCheck: any): void {
         if (!toCheck || typeof toCheck !== 'object') {
+            console.error(NOT_AN_OBJECT);
             console.error(toCheck);
             throw new Error(OBJECT_TRAVERSING_ERROR);
         }
@@ -65,8 +70,9 @@ export class ObjectTraversingUtil {
      * checks if the provided path has at least a length of 1
      * @param objPath path to check
      */
-    private static checkPath(objPath: (string | number)[]): void {
+    private static checkPath(objPath: ObjectPath): void {
         if (objPath.length < 1) {
+            console.error(INVALID_PATH_ARGUMENT);
             console.error(objPath);
             throw new Error(OBJECT_TRAVERSING_ERROR);
         }

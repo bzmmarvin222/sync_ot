@@ -1,6 +1,7 @@
 import {expect} from "chai";
 import {CHILD_KEY, DATA_KEY, SyncableTree} from "../../lib/syncable/syncable-tree";
 import {Operation, OperationType} from "../../lib";
+import {Guid} from "guid-typescript/dist/guid";
 
 
 describe('SyncableTree should perform the expected operations correctly', () => {
@@ -29,9 +30,11 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         let syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
         let firstChild = syncTree.addChild(expectedFirstChildData);
         let secondChild = syncTree.addChild(expectedFirstChildData);
+        const id: Guid = syncTree.nodeId;
         const json: string = syncTree.toJson();
         syncTree = SyncableTree.fromJson(json);
         expect(syncTree).to.be.ok;
+        expect(syncTree.nodeId.equals(id)).to.be.ok;
         expect(syncTree.data).to.equal(expectedRootData);
         expect(syncTree.children.length).to.equal(2);
         expect(syncTree.children[0].data).to.equal(expectedFirstChildData);
@@ -48,6 +51,7 @@ describe('SyncableTree should perform the expected operations correctly', () => 
     it('should create an root node with initial data correctly', function () {
         const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
         expect(syncTree).to.be.ok;
+        expect(syncTree.nodeId).to.be.ok;
         expect(syncTree.children.length).to.equal(0);
         expect(syncTree.data).to.equal(expectedRootData);
     });
@@ -164,5 +168,14 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(syncTree.data).to.equal(expectedRootData);
         expectedEmittedValue = 'Emit';
         syncTree.data = expectedEmittedValue;
+    });
+
+    it('should append additional path information for the data object if passed', function () {
+        const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
+        let fromRoot = syncTree.getDataPathFromRoot();
+        expect(fromRoot.length).to.equal(1);
+        fromRoot = syncTree.getDataPathFromRoot('key');
+        expect(fromRoot.length).to.equal(2);
+        expect(fromRoot[1]).to.equal('key');
     });
 });
