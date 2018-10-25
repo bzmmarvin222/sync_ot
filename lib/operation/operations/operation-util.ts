@@ -43,7 +43,7 @@ export class OperationUtil {
         const index = Math.min(opIndex, oldValue.length);
         const updatedValue = oldValue.slice(0, index) + operation.data + oldValue.slice(index);
         ObjectTraversingUtil.applyValue(root, operation.objectPath, updatedValue);
-        root.emitUpdates();
+        root.findNode(operation.objectPath).emitUpdates();
     }
 
     /**
@@ -68,7 +68,7 @@ export class OperationUtil {
      */
     private static fullReplacement<T>(root: SyncableTree<T>, operation: Operation): void {
         ObjectTraversingUtil.applyValue(root, operation.objectPath, operation.data);
-        root.emitUpdates();
+        root.findNode(operation.objectPath).emitUpdates();
     }
 
     /**

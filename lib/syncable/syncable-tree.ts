@@ -3,6 +3,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {Guid} from "guid-typescript/dist/guid";
 import {ObjectPath, ObjectTraversingUtil} from "../operation/object-traversing-util";
 import {catchError, map} from "rxjs/operators";
+import {OperationUtil} from "../operation/operations/operation-util";
 
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
@@ -216,5 +217,20 @@ export class SyncableTree<T> {
      */
     public emitUpdates(): void {
         this._dataChanges$.next(this._data);
+    }
+
+    /**
+     * searches the node to a generated object path
+     * @param path
+     */
+    public findNode(path: ObjectPath): SyncableTree<T> {
+        const dataEntry = path.findIndex(value => value === DATA_KEY);
+        if (dataEntry > -1) {
+            path = path.slice(0, dataEntry);
+        }
+        if (path.length < 1) {
+            return this;
+        }
+        return ObjectTraversingUtil.findValue(this, path) as SyncableTree<T>;
     }
 }
