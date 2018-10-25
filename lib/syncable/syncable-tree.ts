@@ -2,8 +2,7 @@ import {Operation, OperationType} from "..";
 import {BehaviorSubject, Observable} from "rxjs";
 import {Guid} from "guid-typescript/dist/guid";
 import {ObjectPath, ObjectTraversingUtil} from "../operation/object-traversing-util";
-import {catchError, map} from "rxjs/operators";
-import {OperationUtil} from "../operation/operations/operation-util";
+import {map} from "rxjs/operators";
 
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
@@ -144,7 +143,8 @@ export class SyncableTree<T> {
             type: OperationType.INSERT,
             range: {start: index, end: -1},
             data: insertion,
-            objectPath: this.getDataPathFromRoot(...dataObjectPath)
+            objectPath: this.getDataPathFromRoot(...dataObjectPath),
+            nodeId: this.nodeId.toString()
         };
     }
 
@@ -154,7 +154,8 @@ export class SyncableTree<T> {
     public createNodeDeletion(): Operation {
         return {
             type: OperationType.DELETE,
-            objectPath: this.getPathFromRoot()
+            objectPath: this.getPathFromRoot(),
+            nodeId: this.nodeId.toString()
         }
     }
 
@@ -164,19 +165,22 @@ export class SyncableTree<T> {
     public createNodeDataDeletion(): Operation {
         return {
             type: OperationType.DELETE,
-            objectPath: this.getDataPathFromRoot()
+            objectPath: this.getDataPathFromRoot(),
+            nodeId: this.nodeId.toString()
         }
     }
 
     /**
-     * creates a full replacement of the data the node holds
+     * creates a full replacement of the data the node holds or any of the data's sub objects
      * @param data the data to replace with
+     * @param dataObjectPath additional path information for the object held in data field
      */
-    public createReplacement(data: T): Operation {
+    public createReplacement(data: T, ...dataObjectPath: ObjectPath): Operation {
         return {
             type: OperationType.FULL_REPLACEMENT,
-            objectPath: this.getDataPathFromRoot(),
-            data: data
+            objectPath: this.getDataPathFromRoot(...dataObjectPath),
+            data: data,
+            nodeId: this.nodeId.toString()
         }
     }
 
@@ -188,7 +192,8 @@ export class SyncableTree<T> {
         return {
             type: OperationType.CHILD_APPEND,
             objectPath: this.getPathFromRoot(),
-            data: data
+            data: data,
+            nodeId: this.nodeId.toString()
         };
     }
 

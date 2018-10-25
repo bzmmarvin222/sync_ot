@@ -3,6 +3,7 @@ export interface Operation {
     type: OperationType;
     range?: OperationRange;
     data?: any;
+    nodeId: string;
 }
 
 export interface OperationRange {
