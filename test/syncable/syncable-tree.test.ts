@@ -2,6 +2,7 @@ import {expect} from "chai";
 import {CHILD_KEY, DATA_KEY, SyncableTree} from "../../lib/syncable/syncable-tree";
 import {Operation, OperationType} from "../../lib";
 import {Guid} from "guid-typescript/dist/guid";
+import {OperationUtil} from "../../lib/operation/operations/operation-util";
 
 
 describe('SyncableTree should perform the expected operations correctly', () => {
@@ -154,7 +155,7 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(operation.data).to.equal(expected);
     });
 
-    it('should emit the latest data after setting it', function (done) {
+    it('should emit the latest data after performing data changing operations it', function (done) {
         let emits = 0;
         let expectedEmittedValue = expectedRootData;
         const syncTree: SyncableTree<string> = SyncableTree.root(expectedRootData);
@@ -168,6 +169,23 @@ describe('SyncableTree should perform the expected operations correctly', () => 
         expect(syncTree.data).to.equal(expectedRootData);
         expectedEmittedValue = 'Emit';
         syncTree.data = expectedEmittedValue;
+        syncTree.emitUpdates();
+    });
+
+    it('should emit the latest data child at given path after performing data changing operations it', function (done) {
+        let emits = 0;
+        let expectedEmittedValue = {foo: '1', bar: 2};
+        const syncTree: SyncableTree<any> = SyncableTree.root(expectedEmittedValue);
+        syncTree.getDataChangesFor$('foo').subscribe(data => {
+            expect(data).to.equal(expectedEmittedValue.foo);
+            emits ++;
+            if (emits === 2) {
+                done();
+            }
+        });
+        const operation = syncTree.createInsertion(0, '0', 'foo');
+        expectedEmittedValue.foo = '01';
+        OperationUtil.transform(syncTree, operation);
     });
 
     it('should append additional path information for the data object if passed', function () {

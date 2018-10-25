@@ -1,7 +1,8 @@
 import {Operation, OperationType} from "..";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Guid} from "guid-typescript/dist/guid";
-import {ObjectPath} from "../operation/object-traversing-util";
+import {ObjectPath, ObjectTraversingUtil} from "../operation/object-traversing-util";
+import {catchError, map} from "rxjs/operators";
 
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
@@ -48,7 +49,17 @@ export class SyncableTree<T> {
 
     set data(value: T | undefined) {
         this._data = value;
-        this._dataChanges$.next(this._data);
+    }
+
+    /**
+     * returns changes for the passed path inside the data object
+     * will totally crash if the path does not exist
+     * * @param dataObjectPath additional path information for the object held in data field
+     */
+    public getDataChangesFor$(...dataObjectPath: ObjectPath): Observable<any> {
+        return this.dataChanges$.pipe(
+            map(data => ObjectTraversingUtil.findValue(data as any, dataObjectPath))
+        );
     }
 
     /**
@@ -107,6 +118,7 @@ export class SyncableTree<T> {
 
     /**
      * calculates the indices on the child nodes to traverse to get from the root to the current node and appends the data accessor key
+     * @param dataObjectPath additional path information for the object held in data field
      */
     public getDataPathFromRoot(...dataObjectPath: ObjectPath): ObjectPath {
         const pathFromRoot = this.getPathFromRoot();
@@ -197,5 +209,12 @@ export class SyncableTree<T> {
             data: this._data,
             children: childrenNonRecursive
         };
+    }
+
+    /**
+     * emits the current state of the data
+     */
+    public emitUpdates(): void {
+        this._dataChanges$.next(this._data);
     }
 }
