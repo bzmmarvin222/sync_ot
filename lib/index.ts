@@ -1,6 +1,6 @@
-export * from './syncable/syncable-resource';
-export * from './syncable/syncable-handler';
-export * from './operation/operation';
-export * from './client/web-socket-handler';
-export * from './server/server-handler';
-export * from './syncable/syncable-tree';
+export {SyncableResource} from './syncable/syncable-resource';
+export {SyncableTree} from "./syncable/syncable-tree";
+export {ObjectPath} from "./operation/object-traversing-util";
+export {Operation, OperationType} from './operation/operation';
+export {WebSocketHandler} from './client/web-socket-handler';
+export {ServerHandler} from './server/server-handler';

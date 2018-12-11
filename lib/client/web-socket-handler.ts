@@ -1,4 +1,5 @@
-import {Operation, SyncableHandler} from "..";
+import {SyncableHandler} from "../syncable/syncable-handler";
+import {Operation} from "../operation/operation";
 import {Observable, Subject} from "rxjs";
 
 export class WebSocketHandler implements SyncableHandler{

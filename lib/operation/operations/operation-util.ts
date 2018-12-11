@@ -1,6 +1,6 @@
 import {Operation, OperationType} from "../operation";
 import {ObjectTraversingUtil} from "../object-traversing-util";
-import {SyncableTree} from "../..";
+import {SyncableTree} from "../../syncable/syncable-tree";
 
 export const INVALID_OPERATION_TYPE = 'The passed operation has no type.';
 
@@ -16,7 +16,7 @@ export class OperationUtil {
     public static transform<T>(root: SyncableTree<T>, operation: Operation): void {
         const nodeToPerfomOn: SyncableTree<T> = root.findNode(operation.objectPath);
 
-        if (operation.nodeId !== operation.nodeId.toString()) {
+        if (operation.nodeId !== nodeToPerfomOn.nodeId.toString()) {
             return;
         }
 

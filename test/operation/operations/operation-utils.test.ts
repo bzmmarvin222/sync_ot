@@ -1,8 +1,7 @@
 import {expect} from "chai";
 import {INVALID_OPERATION_TYPE, OperationUtil} from "../../../lib/operation/operations/operation-util";
-import {Operation, OperationType} from "../../../lib";
+import {Operation} from "../../../lib";
 import {SyncableTree} from "../../../lib/syncable/syncable-tree";
-import {root} from "rxjs/internal-compatibility";
 
 describe('OperationUtil should perform the expected operations correctly', () => {
 
@@ -16,7 +15,6 @@ describe('OperationUtil should perform the expected operations correctly', () =>
     let expectedReplacement: string;
     let expectedAppend: string;
     let insertion: Operation;
-    let init: Operation;
     let replacement: Operation;
     let nodeDeletion: Operation;
     let nodeDataDeletion: Operation;
@@ -40,18 +38,6 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         nodeDeletion = firstChild.createNodeDeletion();
         nodeDataDeletion = firstChild.createNodeDataDeletion();
         append = firstChild.createChildAppend(expectedAppend);
-
-        init = {
-            range: {
-                start: -1,
-                end: -1
-            },
-            type: OperationType.INIT,
-            // data: {
-            //     children: []
-            // }
-            objectPath: []
-        };
     });
 
     it('should throw error if the passed operation has mismatched type', function () {
@@ -95,12 +81,20 @@ describe('OperationUtil should perform the expected operations correctly', () =>
 
     it('should remove data from a node correctly', function () {
         OperationUtil.transform(syncTree, nodeDataDeletion);
-        expect(firstChild.data).to.not.be.ok;
+        expect(firstChild.data).to.be.not.ok;
     });
 
     it('should add a new child to a node correctly', function () {
         OperationUtil.transform(syncTree, append);
         expect(firstChild.children.length).to.equal(1);
         expect(firstChild.children[0].data).to.equal(expectedAppend);
+    });
+
+    it('should not perfom any operation if the id does not match the found node', function () {
+        const length = syncTree.children.length;
+        nodeDeletion.nodeId = 'test';
+        OperationUtil.transform(syncTree, nodeDeletion);
+        expect(syncTree.children[0]).to.equal(firstChild);
+        expect(syncTree.children.length).to.equal(length);
     });
 });

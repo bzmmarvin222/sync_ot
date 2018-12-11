@@ -6,7 +6,7 @@ export interface Operation {
     nodeId: string;
 }
 
-export interface OperationRange {
+interface OperationRange {
     start?: number;
     end?: number;
 }

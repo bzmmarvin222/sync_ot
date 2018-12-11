@@ -1,6 +1,6 @@
 import {OperationUtil} from "./operations/operation-util";
 import {Operation, OperationType} from "./operation";
-import {SyncableTree} from "..";
+import {SyncableTree} from "../syncable/syncable-tree";
 import {combineLatest, Observable, ReplaySubject} from "rxjs";
 import {filter, take} from "rxjs/operators";
 

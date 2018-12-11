@@ -1,6 +1,8 @@
-import {Operation, SyncableHandler, SyncableTree} from "..";
+import {SyncableTree} from "../syncable/syncable-tree";
 import {OperationHandler} from "../operation/operation-handler";
 import {Observable} from "rxjs";
+import {SyncableHandler} from "./syncable-handler";
+import {Operation} from "../operation/operation";
 
 export class SyncableResource<T> {
     private _syncHandler: SyncableHandler;

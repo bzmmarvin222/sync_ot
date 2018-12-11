@@ -1,4 +1,4 @@
-import {Operation, OperationType} from "..";
+import {Operation, OperationType} from "../operation/operation";
 import {BehaviorSubject, Observable} from "rxjs";
 import {Guid} from "guid-typescript/dist/guid";
 import {ObjectPath, ObjectTraversingUtil} from "../operation/object-traversing-util";
