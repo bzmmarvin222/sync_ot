@@ -1,8 +1,10 @@
 import {Operation, OperationType} from "../operation";
 import {ObjectTraversingUtil} from "../object-traversing-util";
 import {SyncableTree} from "../../syncable/syncable-tree";
+import {Guid} from "guid-typescript/dist/guid";
 
 export const INVALID_OPERATION_TYPE = 'The passed operation has no type.';
+export const INVALID_CHILD_APPENDATION_OPERATION = 'For appending a child the childs future id must be provided.';
 
 export class OperationUtil {
 
@@ -89,11 +91,14 @@ export class OperationUtil {
      * @param nodeToPerformOn the actually affected node
      */
     private static appendChild<T>(root: SyncableTree<T>, operation: Operation, nodeToPerformOn: SyncableTree<T>): void {
+        if (!operation.affectedChildId) {
+            throw new Error(INVALID_CHILD_APPENDATION_OPERATION);
+        }
         const hasPath: boolean = operation.objectPath && operation.objectPath.length > 0;
         let node: SyncableTree<T> = root;
         if (hasPath) {
             node = ObjectTraversingUtil.findValue(root, operation.objectPath) as SyncableTree<T>;
         }
-        node.addChild(operation.data);
+        node.addChild(operation.data, Guid.parse(operation.affectedChildId!));
     }
 }

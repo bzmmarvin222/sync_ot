@@ -4,6 +4,7 @@ export interface Operation {
     range?: OperationRange;
     data?: any;
     nodeId: string;
+    affectedChildId?: string;
 }
 
 interface OperationRange {

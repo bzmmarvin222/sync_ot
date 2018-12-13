@@ -1,5 +1,9 @@
 import {expect} from "chai";
-import {INVALID_OPERATION_TYPE, OperationUtil} from "../../../lib/operation/operations/operation-util";
+import {
+    INVALID_CHILD_APPENDATION_OPERATION,
+    INVALID_OPERATION_TYPE,
+    OperationUtil
+} from "../../../lib/operation/operations/operation-util";
 import {Operation} from "../../../lib";
 import {SyncableTree} from "../../../lib/syncable/syncable-tree";
 
@@ -44,6 +48,11 @@ describe('OperationUtil should perform the expected operations correctly', () =>
         //force tsc to let this pass
         insertion.type = null as any;
         expect(() => OperationUtil.transform(syncTree, insertion)).to.throw(INVALID_OPERATION_TYPE);
+    });
+
+    it('should throw error if the passed child appendation has no child id', function () {
+        append.affectedChildId = undefined;
+        expect(() => OperationUtil.transform(syncTree, append)).to.throw(INVALID_CHILD_APPENDATION_OPERATION);
     });
 
     it('should insert the desired string at the desired index', function () {

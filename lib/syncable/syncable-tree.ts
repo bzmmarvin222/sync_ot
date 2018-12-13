@@ -88,9 +88,10 @@ export class SyncableTree<T> {
     /**
      * adds a child and marks its parent as this
      * @param data the initial data of the child
+     * @param id the created child's id
      */
-    public addChild(data?: T): SyncableTree<T> {
-        const child: SyncableTree<T> = new SyncableTree<T>(data, this);
+    public addChild(data?: T, id?: Guid): SyncableTree<T> {
+        const child: SyncableTree<T> = new SyncableTree<T>(data, this, id);
         this._children.push(child);
         return child;
     }
@@ -186,6 +187,7 @@ export class SyncableTree<T> {
 
     /**
      * creates a child append
+     * sets the future id of the created child with the operation before it actually gets performed, otherwise every other running instance creates it's own id
      * @param data the initial data of the child
      */
     public createChildAppend(data: T): Operation {
@@ -193,7 +195,8 @@ export class SyncableTree<T> {
             type: OperationType.CHILD_APPEND,
             objectPath: this.getPathFromRoot(),
             data: data,
-            nodeId: this.nodeId.toString()
+            nodeId: this.nodeId.toString(),
+            affectedChildId: Guid.create().toString()
         };
     }
 
