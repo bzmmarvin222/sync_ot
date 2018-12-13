@@ -225,6 +225,9 @@ export class SyncableTree<T> {
      */
     public emitUpdates(): void {
         this._dataChanges$.next(this._data);
+        if (this._parent) {
+            this._parent.emitUpdates();
+        }
     }
 
     /**
