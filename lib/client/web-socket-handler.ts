@@ -1,24 +1,31 @@
 import {SyncableHandler} from "../syncable/syncable-handler";
 import {Operation} from "../operation/operation";
 import {Observable, Subject} from "rxjs";
+import Socket from 'socket.io-client';
 
-export class WebSocketHandler implements SyncableHandler{
-    private _ws: WebSocket;
+export class WebSocketHandler implements SyncableHandler {
+    private _socket;
     private readonly _operations$: Subject<Operation>;
 
     constructor(webSocketUri: string) {
         this._operations$ = new Subject();
-        this._ws = new WebSocket(webSocketUri);
-        this._ws.onmessage = (ev: MessageEvent) => this.handleMessage(ev);
-        this._ws.onclose = (ev: CloseEvent) => this.handleClose(ev);
+        this._socket = Socket(webSocketUri, {
+            query: {
+                //TODO: use some useful value here
+                sessionId: 'x'
+            }
+        });
+        this._socket.on('init',(init) => this._operations$.next(init));
+        this._socket.on('message',(ev) => this.handleMessage(ev));
+        this._socket.on('close', (ev: CloseEvent) => this.handleClose(ev));
     }
 
     get operations$(): Observable<Operation> {
         return this._operations$;
     }
 
-    private handleMessage(event: MessageEvent): void {
-        const operation: Operation = JSON.parse(event.data);
+    private handleMessage(event): void {
+        const operation: Operation = JSON.parse(event);
         this._operations$.next(operation);
     }
 
@@ -31,6 +38,6 @@ export class WebSocketHandler implements SyncableHandler{
      * @param operation to broadcast
      */
     public queueOperation(operation: Operation): void {
-        this._ws.send(JSON.stringify(operation));
+        this._socket.send(JSON.stringify(operation));
     }
 }
