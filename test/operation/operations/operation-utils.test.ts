@@ -3,9 +3,9 @@ import {
     INVALID_CHILD_APPENDATION_OPERATION,
     INVALID_OPERATION_TYPE,
     OperationUtil
-} from "../../../lib/operation/operations/operation-util";
-import {Operation} from "../../../lib";
-import {SyncableTree} from "../../../lib/syncable/syncable-tree";
+} from "../../../src/operation/operations/operation-util";
+import {Operation} from "../../../src";
+import {SyncableTree} from "../../../src/syncable/syncable-tree";
 
 describe('OperationUtil should perform the expected operations correctly', () => {
 

@@ -1,8 +1,8 @@
 import {expect} from "chai";
-import {CHILD_KEY, DATA_KEY, SyncableTree} from "../../lib/syncable/syncable-tree";
-import {Operation, OperationType} from "../../lib";
+import {CHILD_KEY, DATA_KEY, SyncableTree} from "../../src/syncable/syncable-tree";
+import {Operation, OperationType} from "../../src";
 import {Guid} from "guid-typescript/dist/guid";
-import {OperationUtil} from "../../lib/operation/operations/operation-util";
+import {OperationUtil} from "../../src/operation/operations/operation-util";
 
 
 describe('SyncableTree should perform the expected operations correctly', () => {

@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {OBJECT_TRAVERSING_ERROR, ObjectTraversingUtil} from "../../lib/operation/object-traversing-util";
+import {OBJECT_TRAVERSING_ERROR, ObjectTraversingUtil} from "../../src/operation/object-traversing-util";
 
 describe('ObjectTraversingUtil should traverse and set values of objects correctly', () => {
 

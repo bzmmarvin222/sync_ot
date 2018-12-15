@@ -1,14 +1,30 @@
 {
   "name": "sync_ot",
-  "version": "1.0.0",
-  "description": "Will follow...",
+  "version": "0.0.1",
+  "keywords": [
+    "syncable trees"
+  ],
+  "description": "This package helps with creating trees which are synced across multiple clients.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bzmmarvin222/sync_ot"
+  },
+  "bugs": {
+    "url": "https://github.com/bzmmarvin222/sync_ot/issues"
+  },
+  "author": "bzmmarvin222",
+  "contributors": [
+    {
+      "name": "bzmmarvin222",
+      "email": "bzmmarvin222@gmail.com"
+    }
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.test.ts",
     "build": "rimraf dist && tsc"
   },
-  "author": "bzmmarvin222",
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.6",
