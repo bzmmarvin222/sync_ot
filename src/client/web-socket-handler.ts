@@ -7,13 +7,17 @@ export class WebSocketHandler implements SyncableHandler {
     private _socket;
     private readonly _operations$: Subject<Operation>;
 
-    constructor(webSocketUri: string, sessionId: string) {
+    constructor(webSocketUri: string, sessionId: string, headers: {[k: string]: string}) {
         this._operations$ = new Subject();
         this._socket = Socket(webSocketUri, {
             query: {
                 sessionId
-            }
-        });
+            },
+            transportOptions: {
+                polling: {
+                    extraHeaders: headers
+                }
+            }});
         this._socket.on('init', (init) => this._operations$.next(init));
         this._socket.on('message', (ev) => this.handleMessage(ev));
         this._socket.on('close', (ev: CloseEvent) => this.handleClose(ev));
