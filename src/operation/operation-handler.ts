@@ -1,11 +1,13 @@
 import {OperationUtil} from "./operations/operation-util";
 import {Operation, OperationType} from "./operation";
 import {SyncableTree} from "../syncable/syncable-tree";
-import {combineLatest, Observable, ReplaySubject} from "rxjs";
+import {combineLatest, Observable, ReplaySubject, Subscription} from "rxjs";
 import {filter, take} from "rxjs/operators";
 
 export class OperationHandler<T> {
     private readonly _synced: ReplaySubject<SyncableTree<T>> = new ReplaySubject(1);
+    private _tree!: SyncableTree<T>;
+    private _operationSub!: Subscription;
 
     constructor(operations$: Observable<Operation>, synced?: T) {
         if (synced) {
@@ -17,7 +19,8 @@ export class OperationHandler<T> {
                 take(1)
             ).subscribe(init => {
                 this.listen(operations$);
-                this._synced.next(SyncableTree.fromParsedJson((<Operation>init).data));
+                this._tree = SyncableTree.fromParsedJson((<Operation>init).data);
+                this._synced.next(this._tree);
             });
         }
     }
@@ -26,8 +29,22 @@ export class OperationHandler<T> {
         return this._synced;
     }
 
+    get tree(): SyncableTree<T> {
+        return this._tree;
+    }
+
     private listen(operations$: Observable<Operation>): void {
-        combineLatest(this._synced, operations$)
-            .subscribe(([tree, operation]: [SyncableTree<T>, Operation]) => OperationUtil.transform(tree, operation));
+        this._operationSub = combineLatest(this._synced, operations$)
+            .subscribe(([tree, operation]: [SyncableTree<T>, Operation]) => {
+                if (operation.type === OperationType.CLOSE) {
+                    this.close();
+                } else {
+                    OperationUtil.transform(tree, operation)
+                }
+            });
+    }
+
+    public close(): void {
+        this._operationSub.unsubscribe();
     }
 }

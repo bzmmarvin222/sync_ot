@@ -20,4 +20,12 @@ export class SyncableResource<T> {
     public getTree$(): Observable<SyncableTree<T>> {
         return this._opHandler.synced;
     }
+
+    public getCurrentTree(): SyncableTree<T> {
+        return this._opHandler.tree;
+    }
+
+    public close(): void {
+        this._opHandler.close();
+    }
 }
