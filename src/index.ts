@@ -1,5 +1,5 @@
 export {SyncableResource} from './syncable/syncable-resource';
-export {SyncableTree} from "./syncable/syncable-tree";
+export {SyncableTree, SyncableTreeJson} from "./syncable/syncable-tree";
 export {ObjectPath} from "./operation/object-traversing-util";
 export {Operation, OperationType} from './operation/operation';
 export {WebSocketHandler} from './client/web-socket-handler';
