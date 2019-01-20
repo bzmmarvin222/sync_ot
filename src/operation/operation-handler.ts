@@ -17,7 +17,7 @@ export class OperationHandler<T> {
                 take(1)
             ).subscribe(init => {
                 this.listen(operations$);
-                this._synced.next(SyncableTree.fromParsedJson(init.data));
+                this._synced.next(SyncableTree.fromParsedJson((<Operation>init).data));
             });
         }
     }
