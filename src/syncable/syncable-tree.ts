@@ -7,7 +7,7 @@ import {map} from "rxjs/operators";
 export const CHILD_KEY = 'children';
 export const DATA_KEY = 'data';
 
-interface SyncableTreeJson<T> {
+export interface SyncableTreeJson<T> {
     children: SyncableTreeJson<T>[],
     data?: T,
     nodeId: string
@@ -205,6 +205,10 @@ export class SyncableTree<T> {
      */
     public toJson(): string {
         return JSON.stringify(this.toNonRecursive());
+    }
+
+    public toString(): string {
+        return this.toJson();
     }
 
     /**
